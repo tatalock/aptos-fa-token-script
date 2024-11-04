@@ -1,6 +1,6 @@
 import {
   getMetadataFromTypeQuery,
-  insertTokenMutation,
+  upsertTokenMutation,
 } from "../query/index.js";
 import request from "graphql-request";
 import {
@@ -57,33 +57,41 @@ class Token {
       staticFaData = await findTokenByCoinAssetType(this.fa_type);
     }
     let staticData = staticCoinData || staticFaData;
+    const objects: any = {
+      name: this.name,
+      symbol: this.symbol,
+      decimals: this.decimals,
+      hyperfluid_symbol: this.hyperfluid_symbol,
+
+      // chain data > static data
+      logo_url: this.logo_url || staticData?.logoUrl || "",
+      coin_marketcap_id:
+        this.coin_marketcap_id || staticData?.coinMarketCapId?.toString() || "",
+      coingecko_id:
+        this.coingecko_id || staticData?.coingeckoId?.toString() || "",
+
+      coin_type: this.coin_type,
+      fa_type: this.fa_type,
+      asset_type: this.asset_type,
+      is_banned: this.is_banned,
+
+      txn_version: this.txn_version,
+    };
+
+    // for db
+    if (!this.fa_type) {
+      delete objects.fa_type;
+    }
+
+    if (!this.coin_type) {
+      delete objects.coin_type;
+    }
 
     await request({
       url: END_POINTER_URL,
-      document: insertTokenMutation,
+      document: upsertTokenMutation,
       variables: {
-        objects: {
-          name: this.name,
-          symbol: this.symbol,
-          decimals: this.decimals,
-          hyperfluid_symbol: this.hyperfluid_symbol,
-
-          // chain data > static data
-          logo_url: this.logo_url || staticData?.logoUrl || "",
-          coin_marketcap_id:
-            this.coin_marketcap_id ||
-            staticData?.coinMarketCapId?.toString() ||
-            "",
-          coingecko_id:
-            this.coingecko_id || staticData?.coingeckoId?.toString() || "",
-
-          coin_type: this.coin_type,
-          fa_type: this.fa_type,
-          asset_type: this.asset_type,
-          is_banned: this.is_banned,
-
-          txn_version: this.txn_version,
-        },
+        objects,
       },
     });
   }

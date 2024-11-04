@@ -77,13 +77,13 @@ async function main() {
       type: "text",
       name: "start",
       message:
-        "Set Start Version(default: latest version of exist token metadata)",
+        "Set Start Version(default: The latest version of exist token metadata)",
       initial: stopVersion,
     },
     {
       type: "text",
       name: "end",
-      message: "Set End Version(default: latest success version on chain)",
+      message: "Set End Version(default: The latest success version on chain)",
       initial: latestVersionOnChain,
     },
   ]);

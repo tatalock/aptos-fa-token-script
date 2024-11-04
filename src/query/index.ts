@@ -1,12 +1,19 @@
 import { gql } from "graphql-request";
 
-export const insertTokenMutation = gql`
+export const upsertTokenMutation = gql`
   mutation insertTokenMutation($objects: [token_insert_input!] = {}) {
     insert_token(
       objects: $objects
       on_conflict: {
-        update_columns: [txn_version, logo_url, coingecko_id, coin_marketcap_id]
-        constraint: token_testnet_fa_type_coin_type_key
+        update_columns: [
+          txn_version
+          fa_type
+          coin_type
+          logo_url
+          coingecko_id
+          coin_marketcap_id
+        ]
+        constraint: token_asset_type_key
       }
     ) {
       affected_rows

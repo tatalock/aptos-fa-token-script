@@ -19,6 +19,7 @@ async function main() {
     Token.SetType(tokenMD, [type, coinType]);
     const token = new Token(Token.paramsFormat(tokenMD));
     await token.upsert();
+    console.log(token.symbol, " + ", type, ". Insert Done");
   });
 }
 

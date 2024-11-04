@@ -2,7 +2,6 @@ import request from "graphql-request";
 import {
   getLastTxnVersionQuery,
   getMetadataFromFAQuery,
-  insertTokenMutation,
 } from "../query/index.js";
 import { AptosClient } from "../utils/client.js";
 import {
@@ -68,7 +67,7 @@ class Indexer {
       url: OFFICIAL_END_POINTER_URL,
       document: getMetadataFromFAQuery,
       variables: {
-        last_transaction_version: new BigNumber(version).plus(1).toString(),
+        last_transaction_version: version,
       },
     });
 
