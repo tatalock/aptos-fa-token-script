@@ -81,7 +81,7 @@ class Indexer {
       document: getLastTxnVersionQuery,
     });
 
-    return result?.token?.[0]?.txnVersion || "0";
+    return result?.feMeta?.[0]?.txnVersion || "0";
   }
 }
 
