@@ -4,16 +4,24 @@ import {
   getMetadataFromFAQuery,
   insertTokenMutation,
 } from "../query/index.js";
-import dotenv from "dotenv";
 import { AptosClient } from "../utils/client.js";
-import { pairedCoinToAssetType } from "../utils/index.js";
-
-dotenv.config();
-const OFFICIAL_END_POINTER_URL = process.env.OFFICIAL_END_POINTER_URL;
+import {
+  END_POINTER_URL,
+  OFFICIAL_END_POINTER_URL,
+  pairedCoinToAssetType,
+} from "../utils/index.js";
+import { BigNumber } from "bignumber.js";
 
 class Indexer {
   constructor() {}
 
+  /**
+   * Get other type from origin type
+   * coin type <===> fa type
+   *
+   * @param asset_type origin type
+   * @returns
+   */
   async getCoinTypeFromFa(asset_type: string) {
     if (asset_type.indexOf("::") >= 0) {
       try {
@@ -46,6 +54,12 @@ class Indexer {
     }
   }
 
+  /**
+   * Get Token metadata from specified version
+   *
+   * @param version start version
+   * @returns
+   */
   async getTokenMetadataFromVersion(version: number) {
     if (!OFFICIAL_END_POINTER_URL) return;
 
@@ -54,7 +68,7 @@ class Indexer {
       url: OFFICIAL_END_POINTER_URL,
       document: getMetadataFromFAQuery,
       variables: {
-        last_transaction_version: version,
+        last_transaction_version: new BigNumber(version).plus(1).toString(),
       },
     });
 
@@ -62,15 +76,13 @@ class Indexer {
   }
 
   async getLastTxnVersion() {
-    if (!OFFICIAL_END_POINTER_URL) return;
-
+    if (!END_POINTER_URL) return;
     const result: any = await request({
-      url: OFFICIAL_END_POINTER_URL,
+      url: END_POINTER_URL,
       document: getLastTxnVersionQuery,
-      variables: {},
     });
 
-    return result?.token?.[0]?.txn_version || 0;
+    return result?.token?.[0]?.txn_version || "0";
   }
 }
 
