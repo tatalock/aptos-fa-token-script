@@ -96,7 +96,6 @@ const main = async () => {
   run(0);
 };
 
+// TODO: update specific tokens
+// TODO: update all tokens
 main();
-// init version
-// fetch coin fa
-// insert db
