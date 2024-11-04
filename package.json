@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev:tsc": "tsc -w --preserveWatchOutput",
-    "specified": "node dist/specified.js",
+    "spec": "node dist/specified.js",
     "resume": "node dist/resume.js"
   },
   "type": "module",

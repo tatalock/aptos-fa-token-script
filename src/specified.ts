@@ -14,7 +14,6 @@ async function main() {
   tokenTypes.forEach(async (type: string) => {
     if (!type) return;
     const coinType: string = await indexer.getCoinTypeFromFa(type);
-
     const tokenMD: any = await Token.getTokenByAssetType(type || coinType);
 
     Token.SetType(tokenMD, [type, coinType]);
