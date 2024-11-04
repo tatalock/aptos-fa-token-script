@@ -18,22 +18,22 @@ class Indexer {
    * Get other type from origin type
    * coin type <===> fa type
    *
-   * @param asset_type origin type
+   * @param assetType origin type
    * @returns
    */
-  async getCoinTypeFromFa(asset_type: string) {
-    if (asset_type.indexOf("::") >= 0) {
+  async getCoinTypeFromFa(assetType: string) {
+    if (assetType?.indexOf("::") >= 0) {
       try {
         const result: any = await AptosClient.view({
           payload: {
             function: "0x1::coin::paired_metadata",
-            typeArguments: [asset_type],
+            typeArguments: [assetType],
             functionArguments: [],
           },
         });
         return result?.[0].vec?.[0]?.inner || "";
       } catch (e: any) {
-        console.log("asset_type", e.message);
+        console.log("assetType", e.message);
         return "";
       }
     } else {
@@ -42,12 +42,12 @@ class Indexer {
           payload: {
             function: "0x1::coin::paired_coin",
             typeArguments: [],
-            functionArguments: [asset_type],
+            functionArguments: [assetType],
           },
         });
         return pairedCoinToAssetType(result?.[0].vec?.[0]);
       } catch (e: any) {
-        console.log("asset_type", e.message);
+        console.log("assetType", e.message);
         return "";
       }
     }
@@ -81,7 +81,7 @@ class Indexer {
       document: getLastTxnVersionQuery,
     });
 
-    return result?.token?.[0]?.txn_version || "0";
+    return result?.token?.[0]?.txnVersion || "0";
   }
 }
 

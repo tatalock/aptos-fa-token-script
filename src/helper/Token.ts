@@ -1,3 +1,4 @@
+import dotenv from "dotenv";
 import {
   getMetadataFromTypeQuery,
   upsertTokenMutation,
@@ -8,41 +9,42 @@ import {
   OFFICIAL_END_POINTER_URL,
   typeToLong,
 } from "../utils/index.js";
-import { AccountAddress } from "@aptos-labs/ts-sdk";
 import { findTokenByCoinAssetType } from "../data/staticTokenList.js";
+
+dotenv.config();
 
 interface TokenParam {
   name: string;
   symbol: string;
   decimals: number;
-  hyperfluid_symbol: string;
-  logo_url: string;
-  coingecko_id: string;
-  coin_marketcap_id: string;
-  asset_type: string;
+  hyperfluidSymbol: string;
+  logoUrl: string;
+  coingeckoId: string;
+  coinMarketcapId: string;
+  assetType: string;
 
-  fa_type: string;
-  coin_type: string;
-  is_banned: boolean;
-  txn_version: number;
+  faType: string;
+  coinType: string;
+  isBanned: boolean;
+  txnVersion: number;
 }
 
 class Token {
   name = "";
   symbol = "";
   decimals = 8;
-  hyperfluid_symbol = "";
-  logo_url = "";
+  hyperfluidSymbol = "";
+  logoUrl = "";
 
-  coingecko_id = "";
-  coin_marketcap_id = "";
+  coingeckoId = "";
+  coinMarketcapId = "";
 
-  coin_type = "";
-  fa_type = "";
-  asset_type = "";
-  is_banned = false;
+  coinType = "";
+  faType = "";
+  assetType = "";
+  isBanned = false;
 
-  txn_version = 0;
+  txnVersion = 0;
 
   constructor(args: TokenParam) {
     Object.assign(this, args);
@@ -51,40 +53,40 @@ class Token {
   async upsert() {
     if (!END_POINTER_URL) return;
 
-    let staticCoinData = await findTokenByCoinAssetType(this.coin_type);
+    let staticCoinData = await findTokenByCoinAssetType(this.coinType);
     let staticFaData = {};
     if (!staticCoinData) {
-      staticFaData = await findTokenByCoinAssetType(this.fa_type);
+      staticFaData = await findTokenByCoinAssetType(this.faType);
     }
     let staticData = staticCoinData || staticFaData;
     const objects: any = {
       name: this.name,
       symbol: this.symbol,
       decimals: this.decimals,
-      hyperfluid_symbol: this.hyperfluid_symbol,
+      hyperfluidSymbol: this.hyperfluidSymbol,
 
       // chain data > static data
-      logo_url: this.logo_url || staticData?.logoUrl || "",
-      coin_marketcap_id:
-        this.coin_marketcap_id || staticData?.coinMarketCapId?.toString() || "",
-      coingecko_id:
-        this.coingecko_id || staticData?.coingeckoId?.toString() || "",
+      logoUrl: this.logoUrl || staticData?.logoUrl || "",
+      coinMarketcapId:
+        this.coinMarketcapId || staticData?.coinMarketCapId?.toString() || "",
+      coingeckoId:
+        this.coingeckoId || staticData?.coingeckoId?.toString() || "",
 
-      coin_type: this.coin_type,
-      fa_type: this.fa_type,
-      asset_type: this.asset_type,
-      is_banned: this.is_banned,
+      coinType: this.coinType,
+      faType: this.faType,
+      assetType: this.assetType,
+      isBanned: this.isBanned,
 
-      txn_version: this.txn_version,
+      txnVersion: this.txnVersion,
     };
 
     // for db
-    if (!this.fa_type) {
-      delete objects.fa_type;
+    if (!this.faType) {
+      delete objects.faType;
     }
 
-    if (!this.coin_type) {
-      delete objects.coin_type;
+    if (!this.coinType) {
+      delete objects.coinType;
     }
 
     await request({
@@ -93,6 +95,9 @@ class Token {
       variables: {
         objects,
       },
+      requestHeaders: {
+        "x-hasura-admin-secret": process.env.ADMIN_HEADERS,
+      },
     });
   }
 
@@ -100,11 +105,11 @@ class Token {
     if (types?.length < 2) return;
 
     if (types[0]!.indexOf("::") >= 0) {
-      token.coin_type = types[0];
-      token.fa_type = types[1];
+      token.coinType = types[0];
+      token.faType = types[1];
     } else {
-      token.coin_type = types[1];
-      token.fa_type = types[0];
+      token.coinType = types[1];
+      token.faType = types[0];
     }
   }
 
@@ -113,29 +118,29 @@ class Token {
       name: token.name,
       symbol: token.symbol,
       decimals: token.decimals,
-      hyperfluid_symbol: token.symbol,
+      hyperfluidSymbol: token.symbol,
 
-      logo_url: token.icon_uri || token.logoUrl || "",
-      coingecko_id: "",
-      coin_marketcap_id: "",
+      logoUrl: token.icon_uri || token.logoUrl || "",
+      coingeckoId: "",
+      coinMarketcapId: "",
 
-      coin_type: token.coin_type,
-      fa_type: token.fa_type,
-      asset_type: token.asset_type,
-      is_banned: false,
+      coinType: token.coinType || token.coin_type,
+      faType: token.faType || token.fa_type,
+      assetType: token.asset_type,
+      isBanned: false,
 
-      txn_version: token.last_transaction_version.toString(),
+      txnVersion: token.last_transaction_version.toString(),
     };
   }
 
-  static async getTokenByAssetType(asset_type: string) {
+  static async getTokenByAssetType(assetType: string) {
     if (!OFFICIAL_END_POINTER_URL) return;
 
     const result: any = await request({
       url: OFFICIAL_END_POINTER_URL,
       document: getMetadataFromTypeQuery,
       variables: {
-        asset_type: typeToLong(asset_type),
+        assetType: typeToLong(assetType),
       },
     });
 

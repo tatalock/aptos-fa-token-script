@@ -1,30 +1,30 @@
 import { gql } from "graphql-request";
 
 export const upsertTokenMutation = gql`
-  mutation insertTokenMutation($objects: [token_insert_input!] = {}) {
-    insert_token(
+  mutation insertTokenMutation($objects: [FaMetaInsertInput!] = {}) {
+    insertFaMeta(
       objects: $objects
-      on_conflict: {
-        update_columns: [
-          txn_version
-          fa_type
-          coin_type
-          logo_url
-          coingecko_id
-          coin_marketcap_id
+      onConflict: {
+        updateColumns: [
+          txnVersion
+          faType
+          coinType
+          logoUrl
+          coingeckoId
+          coinMarketcapId
         ]
-        constraint: token_asset_type_key
+        constraint: fa_meta_asset_type_key
       }
     ) {
-      affected_rows
+      affectedRows
     }
   }
 `;
 
 export const getLastTxnVersionQuery = gql`
   query getLastTxnVersionQuery {
-    token(order_by: { txn_version: desc }, limit: 1) {
-      txn_version
+    faMeta(orderBy: { txnVersion: DESC }, limit: 1) {
+      txnVersion
     }
   }
 `;
@@ -57,8 +57,8 @@ export const getMetadataFromFAQuery = gql`
 
 export const getMetadataFromTypeQuery = gql`
   ${tokenMetadataFragment}
-  query getMetadataFromFAQuery($asset_type: String = "") {
-    fungible_asset_metadata(where: { asset_type: { _eq: $asset_type } }) {
+  query getMetadataFromFAQuery($assetType: String = "") {
+    fungible_asset_metadata(where: { asset_type: { _eq: $assetType } }) {
       ...TokenMetadata
     }
   }

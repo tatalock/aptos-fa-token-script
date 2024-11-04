@@ -1977,9 +1977,9 @@ const getStaticToken = async () => {
   tokens = await result.json();
 };
 
-export const findTokenByCoinAssetType = async (asset_type: string) => {
+export const findTokenByCoinAssetType = async (assetType: string) => {
   const result: any = tokens.find(
-    (token: any) => token.tokenAddress === asset_type
+    (token: any) => token.tokenAddress === assetType
   );
   return result?.name ? result : null;
 };

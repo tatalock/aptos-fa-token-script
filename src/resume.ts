@@ -37,7 +37,7 @@ const run = async (version: number) => {
       } catch (e: any) {
         console.log("\n");
         console.error(
-          token.asset_type,
+          token.assetType,
           " ",
           token.symbol,
           ":",
@@ -52,7 +52,7 @@ const run = async (version: number) => {
       return;
     }
 
-    if (new BigNumber(tokens[tokens.length - 1].txn_version).gte(endVersion)) {
+    if (new BigNumber(tokens[tokens.length - 1].txnVersion).gte(endVersion)) {
       console.log(`All Done, And Stop at: ${endVersion}`);
       return;
     }
