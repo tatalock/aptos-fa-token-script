@@ -5,26 +5,11 @@ import {
   insertTokenMutation,
 } from "../query/index.js";
 import dotenv from "dotenv";
-import { AptosClient } from "../client.js";
+import { AptosClient } from "../utils/client.js";
+import { pairedCoinToAssetType } from "../utils/index.js";
 
 dotenv.config();
 const OFFICIAL_END_POINTER_URL = process.env.OFFICIAL_END_POINTER_URL;
-
-function hex2a(hexx: number | string) {
-  var hex = hexx.toString(); //force conversion
-  var str = "";
-  for (var i = 0; i < hex.length; i += 2)
-    str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
-  return str;
-}
-const pairedCoinToAssetType = (data: any) => {
-  if (!data?.account_address) return "";
-  return [
-    data.account_address,
-    hex2a(data.module_name.replace("0x", "")),
-    hex2a(data.struct_name.replace("0x", "")),
-  ].join("::");
-};
 
 class Indexer {
   constructor() {}
@@ -85,7 +70,7 @@ class Indexer {
       variables: {},
     });
 
-    return result?.token_testnet?.[0]?.txn_version || 0;
+    return result?.token?.[0]?.txn_version || 0;
   }
 }
 

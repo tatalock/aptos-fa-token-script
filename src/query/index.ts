@@ -1,8 +1,8 @@
 import { gql } from "graphql-request";
 
 export const insertTokenMutation = gql`
-  mutation insertTokenMutation($objects: [token_testnet_insert_input!] = {}) {
-    insert_token_testnet(objects: $objects) {
+  mutation insertTokenMutation($objects: [token_insert_input!] = {}) {
+    insert_token(objects: $objects) {
       affected_rows
     }
   }
@@ -10,7 +10,7 @@ export const insertTokenMutation = gql`
 
 export const getLastTxnVersionQuery = gql`
   query getLastTxnVersionQuery {
-    token_testnet(order_by: { txn_version: desc }, limit: 1) {
+    token(order_by: { txn_version: desc }, limit: 1) {
       txn_version
     }
   }

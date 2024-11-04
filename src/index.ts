@@ -1,5 +1,5 @@
 import path from "path";
-import { AptosClient } from "./client.js";
+import { AptosClient } from "./utils/client.js";
 import { findTokenByCoinAssetType } from "./data/staticTokenList.js";
 import Indexer from "./helper/Indexer.js";
 import fs from "fs";
@@ -98,4 +98,5 @@ const main = async () => {
 
 // TODO: update specific tokens
 // TODO: update all tokens
+// TODO: Resume from breakpoint
 main();
